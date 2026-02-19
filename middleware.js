@@ -16,6 +16,7 @@ module.exports.isLoggedIn = (req, res, next) => {
 module.exports.saveRedirectUrl = (req, res, next) => {
   if (req.session.redirectUrl) {
     res.locals.redirectUrl = req.session.redirectUrl;
+    delete req.session.redirectUrl;
   }
   next();
 };
@@ -72,12 +73,11 @@ module.exports.isReviewAuthor = async (req, res, next) => {
   let { id, reviewId } = req.params;
   let review = await Review.findById(reviewId);
 
-  // if (!listing) {
-  //   req.flash("error", "Listing not found!");
-  //   return res.redirect("/listings");
-  // }
+  if (!review) {
+    req.flash("error", "Review not found!");
+    return res.redirect(`/listings/${id}`);
+  }
 
-  // compare listing owner with logged-in user
   if (!review.author.equals(req.user._id)) {
     req.flash("error", "You did not create this review");
     return res.redirect(`/listings/${id}`);
