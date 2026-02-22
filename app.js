@@ -52,10 +52,6 @@ const store = MongoStore.create({
 });
 
 store.on("error", (err) => {
-  console.log("SESSION STORE ERROR", err);
-});
-
-store.on("error", (err) => {
   console.log("ERROR in MONGO SESSION STORE", err);
 });
 
@@ -66,15 +62,15 @@ const sessionOptions = {
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // 🔥 REQUIRED
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   },
 };
 
-app.set("trust proxy", 1); // 🔥 ADD THIS LINE
-
+app.set("trust proxy", 1);
 app.use(session(sessionOptions));
+
 app.use(flash());
 
 app.use(passport.initialize());
