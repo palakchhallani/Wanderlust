@@ -24,6 +24,10 @@ const { expression } = require("joi");
 // const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const dbUrl = process.env.ATLASDB_URL;
 
+if (!dbUrl) {
+  throw new Error("ATLASDB_URL is not defined in environment variables");
+}
+
 main()
   .then(() => {
     console.log("connected to db");
@@ -44,10 +48,11 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 const store = MongoStore.create({
   mongoUrl: dbUrl,
-  crypto: {
-    secret: process.env.SECRET,
-  },
-  touchAfter: 24 * 3600,
+  collectionName: "sessions",
+});
+
+store.on("error", (err) => {
+  console.log("SESSION STORE ERROR", err);
 });
 
 store.on("error", (err) => {
