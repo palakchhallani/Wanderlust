@@ -109,6 +109,10 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+
   const statusCode = err.statusCode || 500;
   const message = err.message || "Something went wrong";
 
