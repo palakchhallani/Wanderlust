@@ -1,4 +1,5 @@
 const Listing = require("../models/listing");
+const cloudinary = require("../cloudConfig");
 
 module.exports.index = async (req, res) => {
   const allListings = await Listing.find({});
@@ -27,17 +28,34 @@ module.exports.showListing = async (req, res) => {
   res.render("listings/show.ejs", { listing });
 };
 
-module.exports.createListing = async (req, res, next) => {
-  // let listing = req.body.listing; //yeh listing niche pass hoti but humne direct req and body ko pass kr diya
-  let url = req.file.path;
-  let filename = req.file.filename;
+// module.exports.createListing = async (req, res, next) => {
+//   // let listing = req.body.listing; //yeh listing niche pass hoti but humne direct req and body ko pass kr diya
+//   let url = req.file.path;
+//   let filename = req.file.filename;
 
-  const newListing = new Listing(req.body.listing);
-  newListing.owner = req.user._id;
-  newListing.image = { url, filename };
-  await newListing.save();
+//   const newListing = new Listing(req.body.listing);
+//   newListing.owner = req.user._id;
+//   newListing.image = { url, filename };
+//   await newListing.save();
+//   req.flash("success", "New Listing Created!");
+//   res.redirect("/listings");
+// };
+
+module.exports.createListing = async (req, res) => {
+  const listing = new Listing(req.body.listing);
+  listing.owner = req.user._id;
+
+  if (req.file) {
+    const result = await cloudinary.uploader.upload(req.file.path);
+    listing.image = {
+      url: result.secure_url,
+      filename: result.public_id,
+    };
+  }
+
+  await listing.save();
   req.flash("success", "New Listing Created!");
-  res.redirect("/listings");
+  res.redirect(`/listings/${listing._id}`);
 };
 
 module.exports.renderEditForm = async (req, res) => {
