@@ -11,10 +11,10 @@ console.log("CLOUD_API_KEY:", process.env.CLOUD_API_KEY);
 console.log("CLOUD_API_SECRET:", process.env.CLOUD_API_SECRET);
 
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
+  cloudinary,
   params: {
     folder: "wanderlust_DEV",
-    allowedFormats: ["png", "jpg", "jpeg"],
+    allowed_formats: ["png", "jpg", "jpeg"],
   },
 });
 
