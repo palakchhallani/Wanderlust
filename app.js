@@ -67,6 +67,10 @@ const sessionOptions = {
   },
 };
 
+app.set("trust proxy", 1); // 🔥 ADD THIS LINE
+
+app.use(session(sessionOptions));
+
 app.use(session(sessionOptions));
 app.use(flash());
 
