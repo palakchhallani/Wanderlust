@@ -27,6 +27,9 @@ const dbUrl = process.env.ATLASDB_URL;
 if (!dbUrl) {
   throw new Error("ATLASDB_URL is not defined in environment variables");
 }
+if (!process.env.SECRET) {
+  throw new Error("SECRET is not defined in environment variables");
+}
 
 main()
   .then(() => {
