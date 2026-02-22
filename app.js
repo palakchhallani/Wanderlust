@@ -10,7 +10,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError");
 const session = require("express-session");
-const MongoStore = require("connect-mongo")(session);
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -46,9 +46,11 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
-const store = new MongoStore({
-  url: dbUrl,
-  secret: process.env.SECRET,
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: process.env.SECRET,
+  },
 });
 
 store.on("error", (err) => {
@@ -110,15 +112,19 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  console.error(err);
+
   if (res.headersSent) {
     return next(err);
   }
 
-  const statusCode = err.statusCode || 500;
   const message = err.message || "Something went wrong";
 
-  req.flash("error", message);
-  res.redirect("/listings");
+  if (req && typeof req.flash === "function") {
+    req.flash("error", message);
+  }
+
+  return res.redirect("/listings");
 });
 
 app.listen(8080, () => {
