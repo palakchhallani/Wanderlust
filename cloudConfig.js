@@ -1,5 +1,5 @@
 const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary").default;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -8,12 +8,10 @@ cloudinary.config({
 });
 
 const storage = new CloudinaryStorage({
-  cloudinary,
-  params: async (req, file) => {
-    return {
-      folder: "wanderlust_DEV",
-      allowed_formats: ["png", "jpg", "jpeg"],
-    };
+  cloudinary: cloudinary,
+  params: {
+    folder: "wanderlust_DEV",
+    allowedFormats: ["png", "jpg", "jpeg"],
   },
 });
 
